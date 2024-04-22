@@ -10,7 +10,7 @@
     //
     #include <dht11.h>
     dht11 DHT;
-    #define DHT11_PIN A5
+    #define DHT11_PIN A0
 
     void setup(){
       Serial.begin(115200);

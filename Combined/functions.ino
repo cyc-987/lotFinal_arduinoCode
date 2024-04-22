@@ -1,4 +1,4 @@
-#include "Upload.ino"
+//#include "Combined.ino"
 void dataInit()
 {
     temperature = 0;
@@ -22,8 +22,10 @@ void fanInit()
 void fanCtrl(int status){
     if(status == 1){
         digitalWrite(fanPin,HIGH);
+        fanStatus = 1;
     }else{
         digitalWrite(fanPin,LOW);
+        fanStatus = 0;
     }
 }
 
@@ -53,7 +55,7 @@ void getDHT11Data()
     Serial.println(DHT.temperature,1);
 
     //save data
-    temperature = DHT.temperature;
+    //temperature = DHT.temperature;
     humidity = DHT.humidity;
 
     //delay(2000);
@@ -76,23 +78,61 @@ void oledDisplay()
 //lock functions
 void lockInit()
 {
-
+    pinMode(lockOutput, INPUT_PULLUP); 
+    pinMode(lockInput, OUTPUT);
+    digitalWrite(lockInput, LOW);//set to close
 }
 void lockCtrl(int status)
 {
-
+    //0 is lock, 1 is unlock
+    if(status == 1){
+        digitalWrite(lockInput, HIGH);
+        delay(2000);
+        digitalWrite(lockInput, LOW);
+    }else{
+        digitalWrite(lockInput, LOW);
+    }
 }
 void lockCheck()
 {
-
+    lockStatus = digitalRead(lockOutput);
 }
 
 //heater functions
+void heaterInit()
+{
+    pinMode(heater, OUTPUT);
+}
+void heaterCtrl(int status)
+{
+    //0 is off, 1 is on
+    if(status == 1){
+        digitalWrite(heater, LOW);
+        heaterStatus = 1;
+    }else{
+        digitalWrite(heater, HIGH);
+        heaterStatus = 0;
+    }
+}
+
+//infrared temperature functions
+void itemperatureInit()
+{
+    mlx.begin();
+}
+void itemperatureRead()
+{
+    temperature = mlx.readObjectTempC();
+}
 
 //data control functions
 void getData()
 {
+    //humidity
     getDHT11Data();
+    //temperature
+    itemperatureRead();
+    //lock
     lockCheck();
 }
 
@@ -110,11 +150,18 @@ void updateData()
     //heater
     if(temperature < targetTemperature-3 || temperature > targetTemperature+3){
         heaterStatus = 1;
+        heaterCtrl(heaterStatus);
     }else{
         heaterStatus = 0;
+        heaterCtrl(heaterStatus);
     }
 
     //lock
+    if(lockStatus == 1){
+        lockCtrl(1);
+    }else{
+        lockCtrl(0);
+    }
 
     //oled
 

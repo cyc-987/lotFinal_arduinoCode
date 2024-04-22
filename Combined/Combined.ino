@@ -7,14 +7,14 @@
 #include <U8g2lib.h>
 
 // User Modified Part
-#define wifi_ssid "K3C-2.4G"
-#define wifi_psw "1145141919810"
-#define clientIDstr "ArduinoDev"
-#define timestamp "996"
-#define ProductKey "k0v6qShfY3U"
-#define DeviceName "ArduinoDev"
-#define DeviceSecret "722c737fd7f6d8df7943ad29980026fa"
-#define password "BD0D1B61510F60CC3A2502CFA9F2D13CF8531D58"
+#define wifi_ssid ""
+#define wifi_psw ""
+#define clientIDstr ""
+#define timestamp ""
+#define ProductKey ""
+#define DeviceName ""
+#define DeviceSecret ""
+#define password ""
 
 // Logic Preset
 #define OFF 0
@@ -82,11 +82,22 @@ int voiceOutput;//0 is no output,,
 unsigned long timeStart;
 
 // my start data
+//fan
 #define fanPin 11
+//dht11
 #include <dht11.h>
 dht11 DHT;
-#define DHT11_PIN A5
+#define DHT11_PIN A0
+//oled
 U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+//lock
+#define lockInput A4
+#define lockOutput A5
+//heater
+#define heater A2//高关低开，继电器是反的（x，别一直加热了
+//infrared temp
+#include <Adafruit_MLX90614.h>
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
 void setup()
 {
@@ -115,6 +126,9 @@ void setup()
   dataInit();
   fanInit();
   oledInit();
+  lockInit();
+  heaterInit();
+  itemperatureInit();
 }
 
 void loop()
