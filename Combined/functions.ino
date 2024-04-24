@@ -33,7 +33,7 @@ void fanCtrl(int status){
 void getDHT11Data()
 {
     int chk;
-    Serial.print("DHT11, \t");
+    //Serial.print("DHT11, \t");
     chk = DHT.read(DHT11_PIN);    // READ DATA
     switch (chk){
     case DHTLIB_OK:
@@ -50,12 +50,13 @@ void getDHT11Data()
                 break;
     }
     // DISPLAT DATA
-    Serial.print(DHT.humidity,1);
-    Serial.print(",\t");
-    Serial.println(DHT.temperature,1);
+    //Serial.print("Humidity: ");
+    //Serial.println(DHT.humidity,1);
+    //Serial.print(",\t");
+    //Serial.println(DHT.temperature,1);
 
     //save data
-    //temperature = DHT.temperature;
+    temperature = DHT.temperature;
     humidity = DHT.humidity;
 
     //delay(2000);
@@ -65,6 +66,7 @@ void getDHT11Data()
 void oledInit()
 {
     u8g2.begin();
+    Wire.begin();
 }
 void oledDisplay()
 {
@@ -74,7 +76,25 @@ void oledDisplay()
         u8g2.drawStr(0,24,"Hello World!");
     } while ( u8g2.nextPage() );
 }
-
+//oled 显示温湿度
+void oledDisplay_th(){
+    u8g2.firstPage();
+    do {
+        u8g2.setFont(u8g2_font_6x10_tr); // 稍大的字体
+        u8g2.setCursor(0, 12);
+        u8g2.print("Temp: ");
+        u8g2.print(temperature, 1);
+        u8g2.setCursor(0, 24);
+        u8g2.print("Hum: ");
+        u8g2.print(humidity, 1);
+        u8g2.setCursor(0, 36);
+        u8g2.print("Deliv: ");
+        u8g2.print(hasTakeout? "Yes" : "No");
+        u8g2.setCursor(0, 48);
+        u8g2.print("Lock: ");
+        u8g2.print(lockStatus ? "No" : "Yes");
+    } while ( u8g2.nextPage() );
+}
 //lock functions
 void lockInit()
 {
@@ -89,6 +109,7 @@ void lockCtrl(int status)
         digitalWrite(lockInput, HIGH);
         delay(2000);
         digitalWrite(lockInput, LOW);
+        lockStatus=0;
     }else{
         digitalWrite(lockInput, LOW);
     }
@@ -122,39 +143,45 @@ void itemperatureInit()
 }
 void itemperatureRead()
 {
+
     temperature = mlx.readObjectTempC();
+
+
 }
 
 //data control functions
 void getData()
 {
+
     //humidity
     getDHT11Data();
     //temperature
     itemperatureRead();
     //lock
-    lockCheck();
+    //lockCheck();
 }
 
 void updateData()
 {
     //fan
-    if(humidity < targetHumidity-3 || humidity > targetHumidity+3){
-        fanStatus = 1;
-        fanCtrl(fanStatus);
-    }else{
+    if (humidity < targetHumidity - 3) {
+
         fanStatus = 0;
-        fanCtrl(fanStatus);
+    } else if (humidity > targetHumidity + 3) {
+
+        fanStatus = 1;
     }
+    fanCtrl(fanStatus);
 
     //heater
-    if(temperature < targetTemperature-3 || temperature > targetTemperature+3){
+    if (temperature < targetTemperature - 3) {
+
         heaterStatus = 1;
-        heaterCtrl(heaterStatus);
-    }else{
+    } else if (temperature > targetTemperature + 3) {
+
         heaterStatus = 0;
-        heaterCtrl(heaterStatus);
     }
+    heaterCtrl(heaterStatus);
 
     //lock
     if(lockStatus == 1){
@@ -164,6 +191,6 @@ void updateData()
     }
 
     //oled
-
+    //oledDisplay_th();
     //voice
 }
