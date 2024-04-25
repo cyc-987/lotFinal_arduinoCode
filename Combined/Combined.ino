@@ -45,8 +45,9 @@
 #define SDA_PIN 20
 #define SCL_PIN 21
 
-//voice
+
 #define openlockvoicePin A1
+
 
 #define My_JSON_PACK        "{\"id\":\"66666\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":{\"temperature\":%f,\"humidity\":%f,\"hasTakeout\":%d,\"heaterStatus\":%d,\"fanStatus\":%d}}\r"
 //AT指令————————————————————————————————————————————————————————————————————————————
@@ -252,6 +253,9 @@ if (doc.containsKey("params") && doc["params"].containsKey("targetTemperature"))
 if (doc.containsKey("params") && doc["params"].containsKey("targetHumidity")) {
     targetHumidity = doc["params"]["targetHumidity"];
 }
+
+if (doc.containsKey("params") && doc["params"].containsKey("voiceOutput")) {
+    voiceOutput = doc["params"]["voiceOutput"];
 
 if (doc.containsKey("params") && doc["params"].containsKey("voiceOutput")) {
     voiceOutput = doc["params"]["voiceOutput"];
