@@ -46,6 +46,9 @@
 #define SCL_PIN 21
 
 
+#define openlockvoicePin A1
+
+
 #define My_JSON_PACK        "{\"id\":\"66666\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":{\"temperature\":%f,\"humidity\":%f,\"hasTakeout\":%d,\"heaterStatus\":%d,\"fanStatus\":%d}}\r"
 //AT指令————————————————————————————————————————————————————————————————————————————
 // ATcmd Format
@@ -104,6 +107,7 @@ int fanStatus;//0 is off, 1 is on
 float targetTemperature;
 float targetHumidity;
 int voiceOutput;//0 is no output,,
+int lightswitch;//0 is off, 1 is on
 unsigned long timeStart;
 
 
@@ -146,7 +150,9 @@ void setup()
   oledInit();
   lockInit();
   heaterInit();
+  lightInit();
   itemperatureInit();
+  voiceInit();
   Serial.println("dataInit Done");
 }
 
@@ -250,8 +256,16 @@ if (doc.containsKey("params") && doc["params"].containsKey("targetHumidity")) {
 
 if (doc.containsKey("params") && doc["params"].containsKey("voiceOutput")) {
     voiceOutput = doc["params"]["voiceOutput"];
-}
 
+if (doc.containsKey("params") && doc["params"].containsKey("voiceOutput")) {
+    voiceOutput = doc["params"]["voiceOutput"];
+}
+if (doc.containsKey("params") && doc["params"].containsKey("hasTakeout")) {
+    hasTakeout = doc["params"]["hasTakeout"];
+}
+if (doc.containsKey("params") && doc["params"].containsKey("lightswitch")) {
+    lightswitch = doc["params"]["lightswitch"];
+}
   // Print values.
   // Serial.println("==============Start================");
   // Serial.println(method);
