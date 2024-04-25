@@ -11,6 +11,41 @@ void dataInit()
     targetTemperature = 0;
     targetHumidity = 0;
     voiceOutput = 0;
+    lightswitch = 0;
+}
+
+// #TODO: add voice control
+void voiceInit()
+{
+    pinMode(openlockvoicePin, OUTPUT);
+    analogWrite(openlockvoicePin, 255);
+}
+void voiceCtrl(int voice)
+{
+    if(voice == 1){
+        //语音播报
+        analogWrite(openlockvoicePin, 0);
+        delay(500);
+        analogWrite(openlockvoicePin, 255);
+    }
+}
+
+
+void lightInit(){
+  pinMode(7,OUTPUT);  //RGB引脚
+  pinMode(8,OUTPUT); 
+  pinMode(9,OUTPUT); 
+}
+void lightCtrl(int light){
+  if(light == 1){
+    analogWrite(7,255);
+    analogWrite(8,255);
+    analogWrite(9,255);
+  }else{
+    analogWrite(7,0);
+    analogWrite(8,0);
+    analogWrite(9,0);
+  }
 }
 
 //fan functions
@@ -37,7 +72,7 @@ void getDHT11Data()
     chk = DHT.read(DHT11_PIN);    // READ DATA
     switch (chk){
     case DHTLIB_OK:
-                Serial.print("OK,\t");
+                //Serial.print("OK,\t");
                 break;
     case DHTLIB_ERROR_CHECKSUM:
                 Serial.print("Checksum error,\t");
@@ -110,6 +145,7 @@ void lockCtrl(int status)
         delay(2000);
         digitalWrite(lockInput, LOW);
         lockStatus=0;
+        voiceCtrl(1);
     }else{
         digitalWrite(lockInput, LOW);
     }
@@ -156,7 +192,7 @@ void getData()
     //humidity
     getDHT11Data();
     //temperature
-    itemperatureRead();
+    //itemperatureRead();
     //lock
     //lockCheck();
 }
@@ -191,6 +227,6 @@ void updateData()
     }
 
     //oled
-    //oledDisplay_th();
+    oledDisplay_th();
     //voice
 }
