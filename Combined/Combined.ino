@@ -7,6 +7,7 @@
 #include <U8g2lib.h>
 #include <Adafruit_MLX90614.h>
 #include <dht11.h>
+#include <Adafruit_SSD1306.h>
 // #include <SoftwareWire.h>
 
 //wifi和mqtt参数——————————————————————————————————————————————————————————————————————————————
@@ -47,6 +48,10 @@
 
 
 #define openlockvoicePin A1
+
+//oled
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 
 #define My_JSON_PACK        "{\"id\":\"66666\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":{\"temperature\":%f,\"humidity\":%f,\"hasTakeout\":%d,\"heaterStatus\":%d,\"fanStatus\":%d}}\r"
@@ -115,8 +120,8 @@ unsigned long timeStart;
 //dht11
 dht11 DHT;
 // //oled
-U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
-
+//U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 //infrared temp
 Adafruit_MLX90614 mlx = Adafruit_MLX90614(); 
 
@@ -253,9 +258,6 @@ if (doc.containsKey("params") && doc["params"].containsKey("targetTemperature"))
 if (doc.containsKey("params") && doc["params"].containsKey("targetHumidity")) {
     targetHumidity = doc["params"]["targetHumidity"];
 }
-
-if (doc.containsKey("params") && doc["params"].containsKey("voiceOutput")) {
-    voiceOutput = doc["params"]["voiceOutput"];
 
 if (doc.containsKey("params") && doc["params"].containsKey("voiceOutput")) {
     voiceOutput = doc["params"]["voiceOutput"];

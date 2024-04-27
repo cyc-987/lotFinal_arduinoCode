@@ -100,9 +100,25 @@ void getDHT11Data()
 //oled functions
 void oledInit()
 {
-    u8g2.begin();
-    Wire.begin();
+    //u8g2.begin();
+    //Wire.begin();
+    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    { // Address 0x3D for 128x64
+        Serial.println(F("SSD1306 allocation failed"));
+        for (;;)
+            ;
+    }
+    display.clearDisplay();
+    display.setRotation(4);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+    display.println("Initializing");
+    display.display();
+    delay(500);
+    display.clearDisplay();
 }
+/*
 void oledDisplay()
 {
     u8g2.firstPage();
@@ -111,8 +127,10 @@ void oledDisplay()
         u8g2.drawStr(0,24,"Hello World!");
     } while ( u8g2.nextPage() );
 }
+*/
 //oled 显示温湿度
 void oledDisplay_th(){
+    /*
     u8g2.firstPage();
     do {
         u8g2.setFont(u8g2_font_6x10_tr); // 稍大的字体
@@ -129,6 +147,22 @@ void oledDisplay_th(){
         u8g2.print("Lock: ");
         u8g2.print(lockStatus ? "No" : "Yes");
     } while ( u8g2.nextPage() );
+    */
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setCursor(0,0);
+    display.print("Temp: ");
+    display.print(temperature, 1);
+    display.setCursor(0, 20);
+    display.print("Hum: ");
+    display.print(humidity, 1);
+    display.setCursor(0, 40);
+    display.print("Deliv: ");
+    display.print(hasTakeout ? "Yes" : "No");
+    display.setCursor(0, 60);
+    display.print("Lock: ");
+    display.print(lockStatus ? "No" : "Yes");
+    display.display();
 }
 //lock functions
 void lockInit()
