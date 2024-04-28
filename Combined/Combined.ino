@@ -12,8 +12,8 @@
 
 //wifi和mqtt参数——————————————————————————————————————————————————————————————————————————————
 // User Modified Part
-#define wifi_ssid "xm"
-#define wifi_psw "12090217"
+#define wifi_ssid "K3C-2.4G"
+#define wifi_psw "1145141919810"
 #define clientIDstr "Smart_takeout_cabinet"
 #define timestamp "666"
 #define ProductKey "k0v6oal29SX"
@@ -54,7 +54,7 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 
-#define My_JSON_PACK        "{\"id\":\"66666\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":{\"temperature\":%f,\"humidity\":%f,\"hasTakeout\":%d,\"heaterStatus\":%d,\"fanStatus\":%d}}\r"
+#define My_JSON_PACK        "{\"id\":\"66666\",\"version\":\"1.0\",\"method\":\"thing.event.property.post\",\"params\":{\"temperature\":%f,\"humidity\":%f,\"hasTakeout\":%d,\"heaterStatus\":%d,\"fanStatus\":%d,\"lockStatus\":%d}}\r"
 //AT指令————————————————————————————————————————————————————————————————————————————
 // ATcmd Format
 #define AT "AT\r"
@@ -106,6 +106,7 @@ String data; // new add
 float temperature;//temperature data
 float humidity;//humidity data
 int lockStatus;//lock status, 0 is lock, 1 is unlock
+int locallockStatus;
 int hasTakeout;//takeout status, 0 is none, 1 is positive
 int heaterStatus;//0 is off, 1 is on
 int fanStatus;//0 is off, 1 is on
@@ -159,6 +160,10 @@ void setup()
   itemperatureInit();
   voiceInit();
   Serial.println("dataInit Done");
+
+  getData();
+  updateData();
+  Upload();
 }
 
 
@@ -175,6 +180,7 @@ void loop()
   {
     delay(10);
     inString = Serial3.readString();
+    Serial.println(inString);
 
     if (inString.indexOf("MQTTRECV") != -1)
     {
@@ -209,6 +215,7 @@ void loop()
     Serial.println("targetTemperature: "+String(targetTemperature));
     Serial.println("targetHumidity: "+String(targetHumidity));
     Serial.println("voiceOutput: "+String(voiceOutput));
+    Serial.println("lightswitch: "+String(lightswitch));
     Serial.println("==================End====================\n\n\n");
 
     
@@ -295,7 +302,7 @@ bool Upload()
 
   //prepare data to upload
   cleanBuffer(ATdata, BUF_LEN_DATA);
-  len = snprintf(ATdata, BUF_LEN_DATA, My_JSON_PACK, temperature,humidity,hasTakeout,heaterStatus,fanStatus);
+  len = snprintf(ATdata, BUF_LEN_DATA, My_JSON_PACK, temperature,humidity,hasTakeout,heaterStatus,fanStatus,locallockStatus);
   Serial.println(ATdata);
 
   //upload data

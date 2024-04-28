@@ -12,6 +12,7 @@ void dataInit()
     targetHumidity = 0;
     voiceOutput = 0;
     lightswitch = 0;
+    locallockStatus = 0;
 }
 
 // #TODO: add voice control
@@ -91,7 +92,7 @@ void getDHT11Data()
     //Serial.println(DHT.temperature,1);
 
     //save data
-    temperature = DHT.temperature;
+    //temperature = DHT.temperature;
     humidity = DHT.humidity;
 
     //delay(2000);
@@ -149,19 +150,19 @@ void oledDisplay_th(){
     } while ( u8g2.nextPage() );
     */
     display.clearDisplay();
-    display.setTextSize(2);
+    display.setTextSize(1);
     display.setCursor(0,0);
     display.print("Temp: ");
     display.print(temperature, 1);
-    display.setCursor(0, 20);
+    display.setCursor(0, 15);
     display.print("Hum: ");
     display.print(humidity, 1);
-    display.setCursor(0, 40);
+    display.setCursor(0, 30);
     display.print("Deliv: ");
     display.print(hasTakeout ? "Yes" : "No");
-    display.setCursor(0, 60);
+    display.setCursor(0, 45);
     display.print("Lock: ");
-    display.print(lockStatus ? "No" : "Yes");
+    display.print(locallockStatus ? "No" : "Yes");
     display.display();
 }
 //lock functions
@@ -186,7 +187,7 @@ void lockCtrl(int status)
 }
 void lockCheck()
 {
-    lockStatus = digitalRead(lockOutput);
+    locallockStatus = digitalRead(lockOutput);
 }
 
 //heater functions
@@ -226,9 +227,9 @@ void getData()
     //humidity
     getDHT11Data();
     //temperature
-    //itemperatureRead();
+    itemperatureRead();
     //lock
-    //lockCheck();
+    lockCheck();
 }
 
 void updateData()
@@ -263,4 +264,11 @@ void updateData()
     //oled
     oledDisplay_th();
     //voice
+    //light
+    if(lightswitch == 1 && locallockStatus == 1){
+        lightCtrl(1);
+    }else{
+        lightCtrl(0);
+        lightswitch = 0;
+    }
 }
